@@ -41,9 +41,13 @@ type Record struct {
 	JTI      string `json:"jti"`
 
 	// SET-specific claims
-	Subject      string `json:"sub,omitempty"`
+	Subject       string `json:"sub,omitempty"`
 	TransactionID string `json:"txn,omitempty"`
-	TimeOfEvent  int64  `json:"toe,omitempty"`
+	TimeOfEvent   int64  `json:"toe,omitempty"`
+
+	// Hash chain claims
+	Prev     string `json:"prev,omitempty"` // SHA-256(previous JWS), hex; empty = chain start
+	BlockSeq uint64 `json:"bseq,omitempty"` // 0-based position within current block
 
 	// Events map: event URI → event-specific data
 	Events map[EventURI]map[string]any `json:"events"`
