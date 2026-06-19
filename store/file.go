@@ -37,7 +37,7 @@ func (f *File) load() error {
 	if err != nil {
 		return fmt.Errorf("store: open %s: %w", f.path, err)
 	}
-	defer file.Close()
+	defer func() { _ = file.Close() }()
 
 	scanner := bufio.NewScanner(file)
 	var idx uint64
@@ -65,7 +65,7 @@ func (f *File) Append(_ context.Context, jws string) (uint64, error) {
 	if err != nil {
 		return 0, fmt.Errorf("store: append %s: %w", f.path, err)
 	}
-	defer file.Close()
+	defer func() { _ = file.Close() }()
 
 	if _, err := fmt.Fprintln(file, jws); err != nil {
 		return 0, fmt.Errorf("store: write: %w", err)
