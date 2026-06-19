@@ -1,13 +1,24 @@
 // Package emit provides a lightweight SET record emitter that writes signed
 // audit records through Go's standard log/slog package.
 //
+// # Hash Chain
+//
+// Each record carries prev=SHA-256(previous JWS) and a block sequence number.
+// A new Emitter starts with prev="" (empty), marking a chain boundary.
+// Each process creates its own chain segment — there is no attempt to recover
+// the previous chain head on restart. The checkpointer (Level 2) stitches
+// chain segments together via the Merkle tree, so chain boundaries are
+// auditable but not a gap in tamper evidence.
+//
+// # Log Output
+//
 // SET records are emitted as structured slog entries with type="secevent",
 // mixed into the service's normal log stream. Any log pipeline can filter
 // on the "type" field to extract SET records for aggregation.
 //
 // Example slog/JSON output:
 //
-//	{"time":"...","level":"INFO","msg":"secevent","type":"secevent","jws":"eyJ...","event":"urn:siros:audit:key:sign","iss":"https://r2ps.siros.org"}
+//	{"time":"...","level":"INFO","msg":"secevent","type":"secevent","jws":"eyJ...","event":"urn:siros:audit:key:sign","iss":"https://r2ps.siros.org","bseq":0}
 //
 // The "jws" field is self-contained: a compact JWS that can be independently
 // verified with the emitter's public key. The outer fields are hints for

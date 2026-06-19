@@ -48,3 +48,12 @@ jobs:
           go-version-file: go.mod
           cache: true
       - run: go build ./...
+
+  vulncheck:
+    name: Vulnerability Check
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: sirosfoundation/.github/actions/govulncheck@main
+        with:
+          go-version-file: go.mod
