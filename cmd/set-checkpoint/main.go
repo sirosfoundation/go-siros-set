@@ -199,7 +199,7 @@ func initHSM(module, token string, slot uint, pin, keyLabel string, poolSize int
 
 	hsmSigner, err := pkcs11pool.NewSigner(pool, pkcs11pool.KeyByLabel(keyLabel))
 	if err != nil {
-		pool.Close()
+		_ = pool.Close()
 		return nil, nil, nil, fmt.Errorf("create PKCS#11 signer for %q: %w", keyLabel, err)
 	}
 
@@ -208,11 +208,11 @@ func initHSM(module, token string, slot uint, pin, keyLabel string, poolSize int
 
 	signer, err := set.NewSigner(hsmSigner, alg, "sth")
 	if err != nil {
-		pool.Close()
+		_ = pool.Close()
 		return nil, nil, nil, fmt.Errorf("create JWS signer: %w", err)
 	}
 
-	return signer, pubKey, func() { pool.Close() }, nil
+	return signer, pubKey, func() { _ = pool.Close() }, nil
 }
 
 func loadKey(path string) (crypto.Signer, crypto.PublicKey, jose.SignatureAlgorithm, error) {
